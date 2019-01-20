@@ -1,0 +1,6 @@
+{
+    "name": "RestFull API Structure",
+    "mail": {
+        "host": "dev-mail-server"
+    }
+}

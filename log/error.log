@@ -1,0 +1,3 @@
+{"message":"500 - plates is not defined - /api/product/create-requirement - POST - ::1","level":"error"}
+{"message":"500 - product.save is not a function - /api/product/create-requirement - POST - ::1","level":"error"}
+{"message":"500 - fabrication.findOneAndUpdate is not a function - /api/fabrication/saveFabrication - POST - ::1","level":"error"}
