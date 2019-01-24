@@ -37,7 +37,6 @@ router.get("/getfabricationDetails/:id", (req, res) => {
 router.get("/getfabrications", (req, res) => {
 	Fabrication.find()
 	.then((product) => {
-		console.log(product);
 		res.status(200).json(product);
 	})
 	.catch(err => {

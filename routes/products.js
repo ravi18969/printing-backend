@@ -26,13 +26,9 @@ router.post("/create-requirement", (req, res) => {
     });
 });
 
-router.get("/listproducts", (req, res) => {
-	let products;
+router.get("/listAllProducts", (req, res) => {
 	Product.find()
 	.then((pro) => {
-		// products = pro.map((products) => {
-		// 	return products.jobId;
-		// })
 		res.status(200).json(pro);
 	})
 	.catch(err => {
