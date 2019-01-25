@@ -41,7 +41,7 @@ router.post("/login", (req, res) => {
     //     winston.error(error.details[0].message);
     //     return res.status(400).json({"success":false, "message":error.details[0].message});
     // }
-
+    console.log(req.body);
     User.findOne({email: req.body.email}, (err, user) => {
         if (err) {
             return res.status(500).json({success:false, message:err});
@@ -49,8 +49,6 @@ router.post("/login", (req, res) => {
         } 
         else {
             
-            // const hashPassword = bcrypt.hashSync(req.body.password, 10);
-            // console.log([hashPassword, ]); 
             let result = bcrypt.compareSync(req.body.password, user.password);
             
             if (!result) {
@@ -60,7 +58,6 @@ router.post("/login", (req, res) => {
             else {
                 let payload = {subject: user._id}
                 let token = jwt.sign(payload, process.env.SECRET)
-                // res.status(200).send({token});
                 res.status(200).json({success:true, message:token})
             }
         }
@@ -113,6 +110,7 @@ function validateUser(user){
 }
 
 function verifyToken(req, res, next) {
+    console.log(req.headers.authorization);
     if(!req.headers.authorization) {
       return res.status(401).json({success: false, message:"No token provided"});
     }

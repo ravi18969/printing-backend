@@ -20,6 +20,7 @@ const helmet = require("helmet");
 const Auth = require("./routes/auth");
 const Products = require("./routes/products");
 const Fabrications = require("./routes/fabrications");
+const Papers = require("./routes/papers");
 
 // const winston = require('winston');
 // require('winston-mongodb');
@@ -31,14 +32,14 @@ const Fabrications = require("./routes/fabrications");
   
 
 mongoose.Promise = global.Promise;
-// mongoose.connect("mongodb://localhost:27017/veekayPrinters", {
-//     useNewUrlParser:true,
-//     useCreateIndex: true,
-// })
-mongoose.connect("mongodb://localhost:27017/restapi", {
+mongoose.connect("mongodb://localhost:27017/veekayPrinters", {
     useNewUrlParser:true,
     useCreateIndex: true,
 })
+// mongoose.connect("mongodb://localhost:27017/restapi", {
+//     useNewUrlParser:true,
+//     useCreateIndex: true,
+// })
 .then(() => {
     dbDebug("Database connected..");
 })
@@ -86,6 +87,8 @@ if(app.get('env') === "development") {
 app.use('/api/auth', Auth);
 app.use('/api/product', Products);
 app.use('/api/fabrication', Fabrications);
+app.use('/api/papers', Papers);
+
 const port = process.env.port || 8000;
 
 
