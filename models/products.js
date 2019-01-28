@@ -42,6 +42,10 @@ var productSchema = mongoose.Schema({
         type:String, 
         required: true
     },
+    startDate:{
+        type: String,
+        required:true
+    },
     expectedDeliveryDate:{
         type: String,
         required:true

@@ -31,15 +31,15 @@ const Papers = require("./routes/papers");
 // winston.info('Hello again distributed logs');
   
 
-mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/veekayPrinters", {
-    useNewUrlParser:true,
-    useCreateIndex: true,
-})
-// mongoose.connect("mongodb://localhost:27017/restapi", {
+// mongoose.Promise = global.Promise;
+// mongoose.connect("mongodb://localhost:27017/veekayPrinters", {
 //     useNewUrlParser:true,
 //     useCreateIndex: true,
 // })
+mongoose.connect("mongodb://localhost:27017/restapi", {
+    useNewUrlParser:true,
+    useCreateIndex: true,
+})
 .then(() => {
     dbDebug("Database connected..");
 })
@@ -107,6 +107,13 @@ app.get("/", (req, res)=> {
 });
 
 app.use(error);
+
+process.on('uncaughtException', function (err) {
+  // console.error((new Date).toUTCString() + ' uncaughtException:', err.message)
+  // console.error(err.stack)
+  console.log("Handling err");
+  // process.exit(1)
+})
 
 
 app.listen(port, () => {

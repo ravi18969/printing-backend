@@ -132,7 +132,7 @@ const Paper = require("../models/papers");
 
 // ];
 
-// let paperTypes = ["Maplitho", "Hard Paper", "Art Card", "Albaster","Special paper"];
+// let paperTypes = ["Maplitho", "Hard paper", "Art Card", "Albaster","Special paper"];
 
 // router.get("/savepapers", (req, res) => {
 //     let papers = [];
@@ -155,19 +155,9 @@ const Paper = require("../models/papers");
 // });
 
 
-router.get("/", (req, res) => {
-    let paper = new Paper();
-    Paper.find({"dimension": {size:"24*36"}})
-    // .populate('dimension').exec((err, products) => {
-    //     if(err) {
-    // 	    res.status(400).json({success:false, message:"Jobs not found"});
-
-    //     }
-	// 	res.status(200).json(products);
-
-    // })
-	.then((pro) => {
-        // pro.dimension[5].gsm[2].thick
+router.get("/getPapersData", (req, res) => {
+    Paper.find({})
+    .then((pro) => {
 		res.status(200).json(pro);
 	})
 	.catch(err => {
@@ -175,5 +165,25 @@ router.get("/", (req, res) => {
     	res.status(400).json({success:false, message:"Jobs not found"});
 	});
 });
+
+router.post("/updateQuantity/:id", (req, res) => {
+    console.log(req.params.id, req.body);
+    Paper.findByIdAndUpdate({_id: req.params.id})
+    .then((pro) => {
+        console.log(pro);
+        pro.quantity = req.body.quantity;
+        pro.save()
+        .then( () => {
+            res.status(200).json("Updated successfully!!");
+        })
+        .catch(err => {
+            res.status(400).json({success:false, message:"Something got wrong!!"});
+        })
+    })
+    .catch(err => {
+        console.log(err)
+        res.status(400).json({success:false, message:"Jobs not found"});
+    });
+})
 
 module.exports = router;

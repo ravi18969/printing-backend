@@ -5,6 +5,10 @@ var fabricationSchema = mongoose.Schema({
         type:String, 
         required: true
     },
+    vendor: {
+        type:String, 
+        required: true
+    },
     laminationType: {
         type:String, 
         default:""
