@@ -148,7 +148,8 @@ var fabricationSchema = mongoose.Schema({
     created: {
         type:Date,
         default:Date.now()
-    }
+    },
+    workingStatus: { type: Number, default: 0 },
 
 });
 

@@ -58,28 +58,6 @@ router.post("/login", (req, res) => {
     .catch(err => {
         return res.status(500).send("This email is not registered with us");
     });
-    // User.findOne({email: req.body.email}, (err, user) => {
-    //     if (err) {
-    //         return res.status(500).send("This email is not registered with us");
-    //     } 
-    //     else {
-    //         console.log(user);
-    //         let result = bcrypt.compareSync(req.body.password, user.password);
-            
-    //         if (!result) {
-
-    //             res.status(401).send('Invalid Password')
-    //         } 
-    //         else if(result.status == "active") {
-    //             let payload = {subject: user._id}
-    //             let token = jwt.sign(payload, process.env.SECRET)
-    //             res.status(200).json({success:true, message:token})
-    //         }
-    //         else {
-    //             res.status(401).send('You are not an active user. Contact admin to activate your login')
-    //         }
-    //     }
-    // });
 });
 
 //   User.create({
@@ -103,16 +81,6 @@ router.post("/login", (req, res) => {
 
 
 router.get("/me", verifyToken , (req, res) => {
-    // const token = req.headers['x-access-token'];
-    // if(!token) {
-    //     return res.status(401).json({success: false, message:"No token provided"});
-    // }
-    // jwt.verify(token, process.env.SECRET, (err, decoded) => {
-    //     if(err) {
-    //         return res.status(500).json({success:false, message:"Failed to authenticate token"});
-    //     }
-    //     res.status(200).json({success:true, message:decoded});
-    // });
     res.json("Verified token");
 });
 
@@ -153,4 +121,7 @@ function verifyToken(req, res, next) {
     req.userId = payload.subject
     next()
   }
+
+
+  
 module.exports = router;

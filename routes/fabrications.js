@@ -34,6 +34,7 @@ router.get("/getfabricationDetails/:id", (req, res) => {
 	});
 })
 
+
 router.get("/getfabrications", (req, res) => {
 	Fabrication.find()
 	.then((product) => {
@@ -44,5 +45,66 @@ router.get("/getfabrications", (req, res) => {
     	res.status(400).json({success:false, message:err});
 	});
 })
+
+router.get("/getFabricationByDate", (req, res) => {
+	console.log(req.query.start);
+	Fabrication.find({
+		created: {
+        	'$gte': new Date(req.query.start),
+    		'$lte': new Date(req.query.end)
+    	}
+	})
+	.then((pro) => {
+		console.log(pro.length);
+		res.status(200).json(pro);
+	})
+	.catch(err => {
+		console.log(err)
+    	res.status(400).json({success:false, message:"Jobs not found"});
+	});
+})
+
+router.get("/getfabricationMonthlyBasis", (req, res) => {
+	let start = new Date();
+	let end = addMonthsUTC(start, -1);
+	// let data = start.toISOString().split('T')[0]
+	// let end  = start.setMonth( start.getMonth() + 2 )
+	// res.send({start: start, end: end.toISOString().split('T')[0]});
+	// Fabrication.find()
+	Fabrication.find({
+		created: {
+        	'$gte': new Date(end),
+    		'$lte': new Date(start)
+    	}
+	})
+	.then((jobs) => {
+		console.log(jobs.length);
+		let pendingJobs = jobs.filter(result => {
+			return result.workingStatus == 0;
+		})
+
+		let delayedJobs = jobs.filter(result => {
+			return start > new Date(result.deliveryDate);
+		})
+		res.status(200).json({totalJobs: jobs.length , pendingJobs: pendingJobs.length, delayedJobs: delayedJobs.length});
+	})
+	.catch(err => {
+		console.log(err)
+    	res.status(400).json({success:false, message:"Jobs not found"});
+	});
+})
+
+
+function addMonthsUTC (date, count) {
+  if (date && count) {
+    var m, d = (date = new Date(+date)).getUTCDate()
+
+    date.setUTCMonth(date.getUTCMonth() + count, 1)
+    m = date.getUTCMonth()
+    date.setUTCDate(d)
+    if (date.getUTCMonth() !== m) date.setUTCDate(0)
+  }
+  return date
+}
 
 module.exports = router;

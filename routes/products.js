@@ -47,25 +47,6 @@ router.get("/listAllProducts", (req, res) => {
 	});
 })
 
-router.get("/getProductByDate", (req, res) => {
-	console.log(req.params.start)
-	res.send(req.body);
-	// Product.find({
-	// 	created: {
-    //     	'$gte': new Date("2019-01-20T15:37:59.240Z"),
-    // '$lte': new Date("2019-01-29T15:37:59.240Z")
-    // 	}
-	// })
-	// .then((pro) => {
-	// 	console.log(pro.length);
-	// 	res.status(200).json(pro);
-	// })
-	// .catch(err => {
-	// 	console.log(err)
-    // 	res.status(400).json({success:false, message:"Jobs not found"});
-	// });
-})
-
 router.get("/listproduct/:id", (req, res) => {
 	let jobId = req.params.id;
 	let product;
