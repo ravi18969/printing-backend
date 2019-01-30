@@ -154,6 +154,47 @@ const Paper = require("../models/papers");
 //     }) 
 // });
 
+// let papers = [
+//     {
+//         paper:"Maplitho",
+//         quantity:600,
+//         totalOrder:0
+//     },
+//     {
+//         paper:"Hard Paper",
+//         quantity:600,
+//         totalOrder:0
+//     },
+//     {
+//         paper:"Albaster",
+//         quantity:600,
+//         totalOrder:0
+//     },
+//     {
+//         paper:"Art Card",
+//         quantity:600,
+//         totalOrder:0
+//     },
+//     {
+//         paper:"Special Paper",
+//         quantity:600,
+//         totalOrder:0
+//     }
+
+// ]
+
+// router.get("/addData", (req, res) => {
+//     papers.forEach(element => {
+//         Paper.create(element)
+//         .then(res => {
+//             console.log(res);
+//         })
+//         .catch(err => {
+//             console.log(err);
+//         })
+//     });
+// })
+
 
 router.get("/getPapersData", (req, res) => {
     Paper.find({})

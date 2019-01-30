@@ -13,7 +13,6 @@ var paperSchema = mongoose.Schema({
     paper: String,
     quantity:Number,
     totalOrder:Number,
-    // dimension: [dimensionSchema]
  
 });
 
