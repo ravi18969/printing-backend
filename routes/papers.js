@@ -209,17 +209,9 @@ router.get("/getPapersData", (req, res) => {
 
 router.post("/updateQuantity/:id", (req, res) => {
     console.log(req.params.id, req.body);
-    Paper.findByIdAndUpdate({_id: req.params.id})
-    .then((pro) => {
-        console.log(pro);
-        pro.quantity = req.body.quantity;
-        pro.save()
-        .then( () => {
-            res.status(200).json("Updated successfully!!");
-        })
-        .catch(err => {
-            res.status(400).json({success:false, message:"Something got wrong!!"});
-        })
+    Paper.findByIdAndUpdate({ _id: req.params.id }, { $inc: { quantity: req.body.quantity } }, { new: true })
+    .then(() => {
+        res.status(200).json("Updated successfully!!");
     })
     .catch(err => {
         console.log(err)

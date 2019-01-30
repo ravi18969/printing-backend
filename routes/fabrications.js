@@ -54,9 +54,27 @@ router.get("/getFabricationByDate", (req, res) => {
     		'$lte': new Date(req.query.end)
     	}
 	})
-	.then((pro) => {
-		console.log(pro.length);
-		res.status(200).json(pro);
+	.then((jobs) => {
+		// console.log(pro.length);
+		console.log(jobs.length);
+		let pendingJobs = jobs.filter(result => {
+			return result.workingStatus == 0;
+		})
+
+		let completedJobs = jobs.filter(result => {
+			return result.workingStatus == 11;
+		})
+
+		let delayedJobs = jobs.filter(result => {
+			return req.query.start > new Date(result.deliveryDate);
+		})
+		res.status(200).json({
+			totalJobs: jobs.length, 
+			pendingJobs: pendingJobs.length, 
+			delayedJobs: delayedJobs.length, 
+			completedJobs: completedJobs.length,
+			jobs:jobs
+		})
 	})
 	.catch(err => {
 		console.log(err)
@@ -83,10 +101,19 @@ router.get("/getfabricationMonthlyBasis", (req, res) => {
 			return result.workingStatus == 0;
 		})
 
+		let completedJobs = jobs.filter(result => {
+			return result.workingStatus == 11;
+		})
+
 		let delayedJobs = jobs.filter(result => {
 			return start > new Date(result.deliveryDate);
 		})
-		res.status(200).json({totalJobs: jobs.length , pendingJobs: pendingJobs.length, delayedJobs: delayedJobs.length});
+		res.status(200).json({
+			totalJobs: jobs.length, 
+			pendingJobs: pendingJobs.length, 
+			delayedJobs: delayedJobs.length, 
+			completedJobs: completedJobs.length
+		})
 	})
 	.catch(err => {
 		console.log(err)
