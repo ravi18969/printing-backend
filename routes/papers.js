@@ -176,7 +176,7 @@ const Paper = require("../models/papers");
 //         totalOrder:0
 //     },
 //     {
-//         paper:"Special Paper",
+//         paper:"Special paper",
 //         quantity:600,
 //         totalOrder:0
 //     }

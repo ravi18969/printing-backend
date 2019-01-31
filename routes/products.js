@@ -63,10 +63,21 @@ router.get("/listproduct/:id", (req, res) => {
 
 router.post("/updateProduct/:id", (req, res) => {
 	let id = req.params.id;
+	let paperCount = req.body.papersToAdd;
+	// console.log()
+	delete req.body.papersToAdd;
 	console.log(req.body);
 	Product.findOneAndUpdate({_id:id}, req.body)
 	.then(() => {
-		res.status(200).json({success:true, message:"Product updated"});
+		Paper.findOneAndUpdate({ paper: req.body.paperType }, { $inc: { totalOrder: paperCount } }, { new: true })
+		.then(() => {
+			console.log("Updated successfully!!");
+			res.status(200).json({success:true, message:"Product updated"});
+
+		})
+		.catch(err => {
+			console.log(err)
+		});
 	})
 	.catch(err => {
 		console.log(err)

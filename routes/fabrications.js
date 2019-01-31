@@ -4,9 +4,35 @@ const winston = require('../config/winston');
 const Joi = require("joi");
 const Product =  require("../models/products");
 const Fabrication = require("../models/fabrications");
+const Paper = require("../models/papers");
 
 
 router.post("/saveFabrication", (req, res) => {
+	
+	if(req.body.workingStatus == 11) {
+		Product.findOneAndUpdate({jobId:req.body.jobId}, {workingStatus: 11})
+		.then(() => {
+			console.log("Status updated!!");
+		})
+		.catch(err => {
+			console.log(err)
+		});
+
+		Product.find({jobId:req.body.jobId})
+		.then((job) => {
+			console.log(job[0].plates, job[0].paperType);
+			Paper.findOneAndUpdate({paper: job[0].paperType}, {$inc: {quantity:-job[0].plates, totalOrder: -job[0].plates}})
+			.then(() => {
+				console.log("Paper updated");
+			})
+			.catch(err => {
+				console.log("Error form Paper:", err);
+			})
+		})
+		.catch(err => {
+			console.log("Error form Jobs:", err);
+		});
+	}
 	
 	let fabrication = new Fabrication(req.body);
 	console.log(fabrication);

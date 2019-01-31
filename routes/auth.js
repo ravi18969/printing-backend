@@ -6,6 +6,8 @@ const Joi = require("joi");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const User =  require("../models/users");
+const authController = require('../controllers/auth');
+
 
 router.post("/register", (req, res) => {
     
@@ -49,7 +51,8 @@ router.post("/login", (req, res) => {
         else if(user.status == "active") {
             let payload = {subject: user._id}
             let token = jwt.sign(payload, process.env.SECRET)
-            res.status(200).json({success:true, message:token})
+            
+            res.status(200).json({success:true, message:token, role: user.role})
         }
         else {
             res.status(401).send('You are not an active user. Contact admin to activate your login')
@@ -78,9 +81,17 @@ router.post("/login", (req, res) => {
 //   });
 // });
 
+router.get("/getUsers", authController.verifyToken, (req, res) => {
+    User.find({}, {password:0, created:0, __v:0})
+    .then(users => {
+        res.status(200).json(users);
+    })
+    .catch(err => {
+        res.status(500).json("Something went wrong")
+    })
+})
 
-
-router.get("/me", verifyToken , (req, res) => {
+router.get("/me", authController.verifyToken , (req, res) => {
     res.json("Verified token");
 });
 
@@ -96,31 +107,31 @@ function validateUser(user){
     return Joi.validate(user, schema);
 }
 
-function verifyToken(req, res, next) {
-    console.log(req.headers.authorization);
-    if(!req.headers.authorization) {
-      return res.status(401).json({success: false, message:"No token provided"});
-    }
-    // let token = req.headers.authorization.split(' ')[1]
-    let token = req.headers.authorization;
+// function verifyToken(req, res, next) {
+//     console.log(req.headers.authorization);
+//     if(!req.headers.authorization) {
+//       return res.status(401).json({success: false, message:"No token provided"});
+//     }
+//     // let token = req.headers.authorization.split(' ')[1]
+//     let token = req.headers.authorization;
 
-    if(token === 'null') {
-        return res.status(401).json({success: false, message:"No token provided"});    
-    }
-    console.log(req.headers.authorization);
-    jwt.verify(token, process.env.SECRET, (err, decoded) => {
-        if(err) {
-            return res.status(500).json({success:false, message:"Failed to authenticate token"});
-        }
-        res.status(200).json({success:true, message:decoded});
-    });
-    // let payload = jwt.verify(token, 'secretKey')
-    // if(!payload) {
-    //   return res.status(401).send('Unauthorized request')    
-    // }
-    req.userId = payload.subject
-    next()
-  }
+//     if(token === 'null') {
+//         return res.status(401).json({success: false, message:"No token provided"});    
+//     }
+//     console.log(req.headers.authorization);
+//     jwt.verify(token, process.env.SECRET, (err, decoded) => {
+//         if(err) {
+//             return res.status(500).json({success:false, message:"Failed to authenticate token"});
+//         }
+//         res.status(200).json({success:true, message:decoded});
+//     });
+//     // let payload = jwt.verify(token, 'secretKey')
+//     // if(!payload) {
+//     //   return res.status(401).send('Unauthorized request')    
+//     // }
+//     req.userId = payload.subject
+//     next()
+//   }
 
 
   
