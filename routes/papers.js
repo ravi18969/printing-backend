@@ -202,19 +202,16 @@ router.get("/getPapersData", (req, res) => {
 		res.status(200).json(pro);
 	})
 	.catch(err => {
-		console.log(err)
     	res.status(400).json({success:false, message:"Jobs not found"});
 	});
 });
 
 router.post("/updateQuantity/:id", (req, res) => {
-    console.log(req.params.id, req.body);
     Paper.findByIdAndUpdate({ _id: req.params.id }, { $inc: { quantity: req.body.quantity } }, { new: true })
     .then(() => {
         res.status(200).json("Updated successfully!!");
     })
     .catch(err => {
-        console.log(err)
         res.status(400).json({success:false, message:"Jobs not found"});
     });
 })

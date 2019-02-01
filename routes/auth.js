@@ -25,22 +25,21 @@ router.post("/register", (req, res) => {
     })
     .then(() => {
         // const token = jwt.sign({id: user._id}, process.env.SECRET, {expiresIn:1000});
-        res.status(200).send("You have sucesfully registered");
+        res.status(200).json("You have sucesfully registered");
     })
     .catch(err => {
         if(err.code == 11000) {
             winston.error("Email is already registered");
-            return res.status(400).send("Email is already registered")
+            return res.status(400).json("Email is already registered")
         }
-        return res.status(500).send(err);
+        return res.status(500).json(err);
 
-    })
+    });
 });
 
 
 router.post("/login", (req, res) => {
     
-    console.log(req.body);
     User.findOne({email: req.body.email})
     .then(user => {
         let result = bcrypt.compareSync(req.body.password, user.password);
@@ -81,7 +80,7 @@ router.post("/login", (req, res) => {
 //   });
 // });
 
-router.get("/getUsers", authController.verifyToken, (req, res) => {
+router.get("/getUsers", (req, res) => {
     User.find({}, {password:0, created:0, __v:0})
     .then(users => {
         res.status(200).json(users);
@@ -91,12 +90,58 @@ router.get("/getUsers", authController.verifyToken, (req, res) => {
     })
 })
 
+router.post("/changeUserStatus/:id", (req, res) => {
+    let userStatus;
+    if(req.body.status == 'inactive') {
+        userStatus = 'active';
+    }
+    else {
+        userStatus = 'inactive';
+    } 
+    User.findByIdAndUpdate({_id:req.params.id}, {status: userStatus})
+    .then(() => {
+        res.status(200).json("User status changed successfully!!");
+    })
+    .catch(err => {
+        res.status(500).json("Something went wrong:", err)
+    })
+})
+
+router.post("/changeUserRole/:id", (req, res) => {
+    let userRole;
+    if(req.body.role == 'user') {
+        userRole = 'admin';
+    }
+    else {
+        userRole = 'user';
+    } 
+    User.findByIdAndUpdate({_id:req.params.id}, {role: userRole})
+    .then(() => {
+        res.status(200).json("User role changed successfully!!");
+    })
+    .catch(err => {
+        res.status(500).json("Something went wrong:", err)
+    })
+})
+
+router.get("/deleteUser/:id", (req, res) => {
+    
+    User.findOneAndRemove({_id: req.params.id})
+    .then(() => {
+        res.status(200).json("User deleted successfully");
+    })
+    .catch(err => {
+        res.status(500).json(err);
+    })
+    
+})
+
+
 router.get("/me", authController.verifyToken , (req, res) => {
     res.json("Verified token");
 });
 
 function validateUser(user){
-    console.log(user); 
     const schema =Joi.object().keys( {
         firstName:Joi.string().required(),
         lastName:Joi.string().required(),
@@ -106,33 +151,6 @@ function validateUser(user){
     
     return Joi.validate(user, schema);
 }
-
-// function verifyToken(req, res, next) {
-//     console.log(req.headers.authorization);
-//     if(!req.headers.authorization) {
-//       return res.status(401).json({success: false, message:"No token provided"});
-//     }
-//     // let token = req.headers.authorization.split(' ')[1]
-//     let token = req.headers.authorization;
-
-//     if(token === 'null') {
-//         return res.status(401).json({success: false, message:"No token provided"});    
-//     }
-//     console.log(req.headers.authorization);
-//     jwt.verify(token, process.env.SECRET, (err, decoded) => {
-//         if(err) {
-//             return res.status(500).json({success:false, message:"Failed to authenticate token"});
-//         }
-//         res.status(200).json({success:true, message:decoded});
-//     });
-//     // let payload = jwt.verify(token, 'secretKey')
-//     // if(!payload) {
-//     //   return res.status(401).send('Unauthorized request')    
-//     // }
-//     req.userId = payload.subject
-//     next()
-//   }
-
 
   
 module.exports = router;

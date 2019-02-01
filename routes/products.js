@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const winston = require('../config/winston');
-const Joi = require("joi");
+// const winston = require('../config/winston');
+// const Joi = require("joi");
 const Product =  require("../models/products");
 const Fabrication = require("../models/fabrications");
 const Paper = require("../models/papers");
@@ -11,13 +11,11 @@ router.post("/create-requirement", (req, res) => {
 	
 	let product = new Product(req.body);
 	let fabrication = new Fabrication({jobId: req.body.jobId, vendor: req.body.vendor, deliveryDate: req.body.expectedDeliveryDate});
-	console.log(product);
 	Paper.findOneAndUpdate({ paper: req.body.paperType }, { $inc: { totalOrder: req.body.plates } }, { new: true })
     .then(() => {
         console.log("Updated successfully!!");
     })
     .catch(err => {
-        console.log(err)
         res.status(400).json({success:false, message:"Jobs not found"});
     });
 
@@ -28,7 +26,6 @@ router.post("/create-requirement", (req, res) => {
       	res.status(200).json({success: true, message: 'Job created successfully'});
     })
     .catch(err => {
-    	console.log(err);
     	res.status(400).json({success:false, message:err});
     });
 });
@@ -38,25 +35,20 @@ router.post("/create-requirement", (req, res) => {
 router.get("/listAllProducts", (req, res) => {
 	Product.find()
 	.then((pro) => {
-		console.log(pro);
 		res.status(200).json(pro);
 	})
 	.catch(err => {
-		console.log(err)
     	res.status(400).json({success:false, message:"Jobs not found"});
 	});
 })
 
 router.get("/listproduct/:id", (req, res) => {
 	let jobId = req.params.id;
-	let product;
 	Product.find({jobId})
 	.then((product) => {
-		console.log(product[0]);
 		res.status(200).json(product[0]);
 	})
 	.catch(err => {
-		console.log(err)
     	res.status(400).json({success:false, message:"Job Id not found"});
 	});
 })
@@ -64,14 +56,11 @@ router.get("/listproduct/:id", (req, res) => {
 router.post("/updateProduct/:id", (req, res) => {
 	let id = req.params.id;
 	let paperCount = req.body.papersToAdd;
-	// console.log()
 	delete req.body.papersToAdd;
-	console.log(req.body);
 	Product.findOneAndUpdate({_id:id}, req.body)
 	.then(() => {
 		Paper.findOneAndUpdate({ paper: req.body.paperType }, { $inc: { totalOrder: paperCount } }, { new: true })
 		.then(() => {
-			console.log("Updated successfully!!");
 			res.status(200).json({success:true, message:"Product updated"});
 
 		})
@@ -80,13 +69,11 @@ router.post("/updateProduct/:id", (req, res) => {
 		});
 	})
 	.catch(err => {
-		console.log(err)
     	res.status(400).json({success:false, message:"Job Id not found"});
 	});
 })
 
 router.post("/remove/:id", (req, res) => {
-	console.log(req.body)
     Product.findOneAndRemove({jobId: req.params.id}, function(err, product){
     if(err) res.json(err);
     	else {
@@ -103,9 +90,10 @@ router.post("/remove/:id", (req, res) => {
         console.log("Updated successfully!!");
     })
     .catch(err => {
-        console.log(err)
         res.status(400).json({success:false, message:"Jobs not found"});
     });
 
 })
+
+
 module.exports = router;

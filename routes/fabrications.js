@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const winston = require('../config/winston');
-const Joi = require("joi");
+// const winston = require('../config/winston');
+// const Joi = require("joi");
 const Product =  require("../models/products");
 const Fabrication = require("../models/fabrications");
 const Paper = require("../models/papers");
@@ -20,7 +20,6 @@ router.post("/saveFabrication", (req, res) => {
 
 		Product.find({jobId:req.body.jobId})
 		.then((job) => {
-			console.log(job[0].plates, job[0].paperType);
 			Paper.findOneAndUpdate({paper: job[0].paperType}, {$inc: {quantity:-job[0].plates, totalOrder: -job[0].plates}})
 			.then(() => {
 				console.log("Paper updated");
@@ -35,7 +34,6 @@ router.post("/saveFabrication", (req, res) => {
 	}
 	
 	let fabrication = new Fabrication(req.body);
-	console.log(fabrication);
 	Fabrication.findOneAndUpdate({jobId: req.body.jobId}, req.body)
 	.then(() => {
 		res.status(200).json({success: true, message: 'Fabrication data successfully updated'})
@@ -51,7 +49,6 @@ router.get("/getfabricationDetails/:id", (req, res) => {
 	let product;
 	Fabrication.find({jobId})
 	.then((product) => {
-		console.log(product[0]);
 		res.status(200).json(product[0]);
 	})
 	.catch(err => {
@@ -73,7 +70,6 @@ router.get("/getfabrications", (req, res) => {
 })
 
 router.get("/getFabricationByDate", (req, res) => {
-	console.log(req.query.start);
 	Fabrication.find({
 		created: {
         	'$gte': new Date(req.query.start),
@@ -81,8 +77,6 @@ router.get("/getFabricationByDate", (req, res) => {
     	}
 	})
 	.then((jobs) => {
-		// console.log(pro.length);
-		console.log(jobs.length);
 		let pendingJobs = jobs.filter(result => {
 			return result.workingStatus == 0;
 		})
@@ -103,7 +97,6 @@ router.get("/getFabricationByDate", (req, res) => {
 		})
 	})
 	.catch(err => {
-		console.log(err)
     	res.status(400).json({success:false, message:"Jobs not found"});
 	});
 })
@@ -111,10 +104,6 @@ router.get("/getFabricationByDate", (req, res) => {
 router.get("/getfabricationMonthlyBasis", (req, res) => {
 	let start = new Date();
 	let end = addMonthsUTC(start, -1);
-	// let data = start.toISOString().split('T')[0]
-	// let end  = start.setMonth( start.getMonth() + 2 )
-	// res.send({start: start, end: end.toISOString().split('T')[0]});
-	// Fabrication.find()
 	Fabrication.find({
 		created: {
         	'$gte': new Date(end),
@@ -122,7 +111,6 @@ router.get("/getfabricationMonthlyBasis", (req, res) => {
     	}
 	})
 	.then((jobs) => {
-		console.log(jobs.length);
 		let pendingJobs = jobs.filter(result => {
 			return result.workingStatus == 0;
 		})
@@ -142,7 +130,6 @@ router.get("/getfabricationMonthlyBasis", (req, res) => {
 		})
 	})
 	.catch(err => {
-		console.log(err)
     	res.status(400).json({success:false, message:"Jobs not found"});
 	});
 })
