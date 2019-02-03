@@ -5,9 +5,10 @@ const router = express.Router();
 const Product =  require("../models/products");
 const Fabrication = require("../models/fabrications");
 const Paper = require("../models/papers");
+const authController = require('../controllers/auth');
 
 
-router.post("/saveFabrication", (req, res) => {
+router.post("/saveFabrication", authController.verifyToken, (req, res) => {
 	
 	if(req.body.workingStatus == 11) {
 		Product.findOneAndUpdate({jobId:req.body.jobId}, {workingStatus: 11})
@@ -44,7 +45,7 @@ router.post("/saveFabrication", (req, res) => {
 	
 });
 
-router.get("/getfabricationDetails/:id", (req, res) => {
+router.get("/getfabricationDetails/:id", authController.verifyToken, (req, res) => {
 	let jobId = req.params.id;
 	let product;
 	Fabrication.find({jobId})
@@ -58,8 +59,8 @@ router.get("/getfabricationDetails/:id", (req, res) => {
 })
 
 
-router.get("/getfabrications", (req, res) => {
-	Fabrication.find()
+router.get("/getfabrications", authController.verifyToken, (req, res) => {
+	Fabrication.find().sort({created:-1})
 	.then((product) => {
 		res.status(200).json(product);
 	})
@@ -69,7 +70,7 @@ router.get("/getfabrications", (req, res) => {
 	});
 })
 
-router.get("/getFabricationByDate", (req, res) => {
+router.get("/getFabricationByDate", authController.verifyToken, (req, res) => {
 	Fabrication.find({
 		created: {
         	'$gte': new Date(req.query.start),
@@ -101,7 +102,7 @@ router.get("/getFabricationByDate", (req, res) => {
 	});
 })
 
-router.get("/getfabricationMonthlyBasis", (req, res) => {
+router.get("/getfabricationMonthlyBasis", authController.verifyToken, (req, res) => {
 	let start = new Date();
 	let end = addMonthsUTC(start, -1);
 	Fabrication.find({

@@ -5,14 +5,18 @@ const router = express.Router();
 const Product =  require("../models/products");
 const Fabrication = require("../models/fabrications");
 const Paper = require("../models/papers");
+const authController = require('../controllers/auth');
 
 
-router.post("/create-requirement", (req, res) => {
+
+router.post("/create-requirement", authController.verifyToken, (req, res) => {
 	
 	let product = new Product(req.body);
 	let fabrication = new Fabrication({jobId: req.body.jobId, vendor: req.body.vendor, deliveryDate: req.body.expectedDeliveryDate});
+	
 	Paper.findOneAndUpdate({ paper: req.body.paperType }, { $inc: { totalOrder: req.body.plates } }, { new: true })
-    .then(() => {
+    .then((res) => {
+    	console.log(res);
         console.log("Updated successfully!!");
     })
     .catch(err => {
@@ -32,8 +36,8 @@ router.post("/create-requirement", (req, res) => {
 
 
 
-router.get("/listAllProducts", (req, res) => {
-	Product.find()
+router.get("/listAllProducts", authController.verifyToken, (req, res) => {
+	Product.find().sort({created:-1})
 	.then((pro) => {
 		res.status(200).json(pro);
 	})
@@ -42,7 +46,8 @@ router.get("/listAllProducts", (req, res) => {
 	});
 })
 
-router.get("/listproduct/:id", (req, res) => {
+router.get("/listproduct/:id", authController.verifyToken, (req, res) => {
+	// console.log(req.headers);
 	let jobId = req.params.id;
 	Product.find({jobId})
 	.then((product) => {
@@ -53,7 +58,7 @@ router.get("/listproduct/:id", (req, res) => {
 	});
 })
 
-router.post("/updateProduct/:id", (req, res) => {
+router.post("/updateProduct/:id", authController.verifyToken, (req, res) => {
 	let id = req.params.id;
 	let paperCount = req.body.papersToAdd;
 	delete req.body.papersToAdd;
@@ -73,7 +78,7 @@ router.post("/updateProduct/:id", (req, res) => {
 	});
 })
 
-router.post("/remove/:id", (req, res) => {
+router.post("/remove/:id", authController.verifyToken, (req, res) => {
     Product.findOneAndRemove({jobId: req.params.id}, function(err, product){
     if(err) res.json(err);
     	else {

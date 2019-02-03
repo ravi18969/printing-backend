@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Paper = require("../models/papers");
+const authController = require('../controllers/auth');
 
 // let papersData = [
 //     {
@@ -196,7 +197,7 @@ const Paper = require("../models/papers");
 // })
 
 
-router.get("/getPapersData", (req, res) => {
+router.get("/getPapersData", authController.verifyToken, (req, res) => {
     Paper.find({})
     .then((pro) => {
 		res.status(200).json(pro);
@@ -206,7 +207,7 @@ router.get("/getPapersData", (req, res) => {
 	});
 });
 
-router.post("/updateQuantity/:id", (req, res) => {
+router.post("/updateQuantity/:id", authController.verifyToken, (req, res) => {
     Paper.findByIdAndUpdate({ _id: req.params.id }, { $inc: { quantity: req.body.quantity } }, { new: true })
     .then(() => {
         res.status(200).json("Updated successfully!!");

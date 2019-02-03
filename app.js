@@ -32,14 +32,14 @@ const Papers = require("./routes/papers");
   
 
 mongoose.Promise = global.Promise;
-mongoose.connect("mongodb://localhost:27017/veekayPrinters", {
-    useNewUrlParser:true,
-    useCreateIndex: true,
-})
-// mongoose.connect("mongodb://localhost:27017/restapi", {
+// mongoose.connect("mongodb://localhost:27017/veekayPrinters", {
 //     useNewUrlParser:true,
 //     useCreateIndex: true,
 // })
+mongoose.connect("mongodb://localhost:27017/restapi", {
+    useNewUrlParser:true,
+    useCreateIndex: true,
+})
 .then(() => {
     dbDebug("Database connected..");
 })

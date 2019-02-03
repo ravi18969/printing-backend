@@ -39,7 +39,7 @@ router.post("/register", (req, res) => {
 
 
 router.post("/login", (req, res) => {
-    
+    console.log(req);
     User.findOne({email: req.body.email})
     .then(user => {
         let result = bcrypt.compareSync(req.body.password, user.password);
@@ -48,16 +48,18 @@ router.post("/login", (req, res) => {
             res.status(401).send('Invalid Password')
         } 
         else if(user.status == "active") {
-            let payload = {subject: user._id}
+            let name = user.firstName + " " + user.lastName;
+            let payload = {subject: user._id, username:name}
             let token = jwt.sign(payload, process.env.SECRET)
-            
-            res.status(200).json({success:true, message:token, role: user.role})
+            res.status(200).json({success:true, token:token, role: user.role, name: name})
         }
         else {
+            console.log('You are not an active user. Contact admin to activate your login');
             res.status(401).send('You are not an active user. Contact admin to activate your login')
         }
     })
     .catch(err => {
+        console.log(err);
         return res.status(500).send("This email is not registered with us");
     });
 });
@@ -80,7 +82,7 @@ router.post("/login", (req, res) => {
 //   });
 // });
 
-router.get("/getUsers", (req, res) => {
+router.get("/getUsers", authController.verifyToken, (req, res) => {
     User.find({}, {password:0, created:0, __v:0})
     .then(users => {
         res.status(200).json(users);
@@ -90,7 +92,7 @@ router.get("/getUsers", (req, res) => {
     })
 })
 
-router.post("/changeUserStatus/:id", (req, res) => {
+router.post("/changeUserStatus/:id", authController.verifyToken, (req, res) => {
     let userStatus;
     if(req.body.status == 'inactive') {
         userStatus = 'active';
@@ -107,7 +109,7 @@ router.post("/changeUserStatus/:id", (req, res) => {
     })
 })
 
-router.post("/changeUserRole/:id", (req, res) => {
+router.post("/changeUserRole/:id", authController.verifyToken, (req, res) => {
     let userRole;
     if(req.body.role == 'user') {
         userRole = 'admin';
@@ -124,7 +126,7 @@ router.post("/changeUserRole/:id", (req, res) => {
     })
 })
 
-router.get("/deleteUser/:id", (req, res) => {
+router.get("/deleteUser/:id", authController.verifyToken, (req, res) => {
     
     User.findOneAndRemove({_id: req.params.id})
     .then(() => {
